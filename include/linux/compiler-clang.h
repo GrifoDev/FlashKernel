@@ -22,6 +22,9 @@
 	__attribute__((__section__(".text..ftrace")))
 #endif
 
+#define __nocfi		__attribute__((no_sanitize("cfi")))
+#endif
+
 /* Clang doesn't have a way to turn it off per-function, yet. */
 #ifdef __noretpoline
 #undef __noretpoline
