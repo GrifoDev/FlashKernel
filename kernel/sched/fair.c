@@ -6207,8 +6207,6 @@ find_idlest_group(struct sched_domain *sd, struct task_struct *p,
 	int imbalance_scale = 100 + (sd->imbalance_pct-100)/2;
 	unsigned long imbalance = scale_load_down(NICE_0_LOAD) *
 				(sd->imbalance_pct-100) / 100;
-	struct sched_group *fit_group = NULL;
-	unsigned long fit_capacity = ULONG_MAX;
 
 	if (sd_flag & SD_BALANCE_WAKE)
 		load_idx = sd->wake_idx;
@@ -6250,15 +6248,6 @@ find_idlest_group(struct sched_domain *sd, struct task_struct *p,
 
 			if (spare_cap > max_spare_cap)
 				max_spare_cap = spare_cap;
-
-			/*
-			 * Look for most energy-efficient group that can fit
-			 * that can fit the task.
-			 */
-			if (capacity_of(i) < fit_capacity && __task_fits(p, i, cpu_util(i))) {
-				fit_capacity = capacity_of(i);
-				fit_group = group;
-			}
 		}
 
 		/* Adjust by relative CPU capacity of the group */
@@ -6297,9 +6286,6 @@ find_idlest_group(struct sched_domain *sd, struct task_struct *p,
 			}
 		}
 	} while (group = group->next, group != sd->groups);
-
-	if (fit_group)
-		return fit_group;
 
 	/*
 	 * The cross-over point between using spare capacity or least load
@@ -6359,8 +6345,8 @@ find_idlest_group_cpu(struct sched_group *group, struct task_struct *p, int this
 				min_exit_latency = idle->exit_latency;
 				latest_idle_timestamp = rq->idle_stamp;
 				shallowest_idle_cpu = i;
-			} else if (idle_cpu(i) &&
-				  (!idle || idle->exit_latency == min_exit_latency) &&
+
+			} else if ((!idle || idle->exit_latency == min_exit_latency) &&
 				   rq->idle_stamp > latest_idle_timestamp) {
 				/*
 				 * If equal or no active idle state, then
@@ -6368,13 +6354,6 @@ find_idlest_group_cpu(struct sched_group *group, struct task_struct *p, int this
 				 * a warmer cache.
 				 */
 				latest_idle_timestamp = rq->idle_stamp;
-				shallowest_idle_cpu = i;
-			} else if (shallowest_idle_cpu == -1) {
-				/*
-				 * If we haven't found an idle CPU yet
-				 * pick a non-idle one that can fit the task as
-				 * fallback.
-				 */
 				shallowest_idle_cpu = i;
 			}
 		} else if (shallowest_idle_cpu == -1) {
