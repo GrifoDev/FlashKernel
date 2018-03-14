@@ -283,6 +283,14 @@ config ARCH_EXYNOS9
 	help
 	  Samsung EXYNOS9 (Meercat/Ananke) SoC based systems
 
+config MODEL_STARLTE
+	bool "Samsung Galaxy S9"
+	depends on SOC_EXYNOS9810
+
+config MODEL_STAR2LTE
+	bool "Samsung Galaxy S9 Plus"
+	depends on SOC_EXYNOS9810
+
 config ZONE_MOVABLE
 	bool "Enable Zone Movable"
 	default n
