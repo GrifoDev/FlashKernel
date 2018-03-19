@@ -1243,7 +1243,7 @@ static struct sync_file *m2m1shot2_create_fence(struct m2m1shot2_context *ctx)
 	struct sync_file *fence;
 	struct sync_pt *pt;
 
-	pt = sync_pt_create(ctx->timeline, sizeof(*pt), ctx->timeline_max + 1);
+	pt = sync_pt_create(ctx->timeline, ctx->timeline_max + 1);
 	if (!pt) {
 		dev_err(dev,
 			"%s: failed to create sync_pt\n", __func__);

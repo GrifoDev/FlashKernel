@@ -230,18 +230,8 @@ void sync_timeline_signal(struct sync_timeline *obj, unsigned int inc)
 	obj->value += inc;
 
 	list_for_each_entry_safe(pt, next, &obj->pt_list, link)
-		if (timeline_fence_signaled(&pt->base))
+		if (fence_is_signaled_locked(&pt->base))
 			list_del_init(&pt->link);
-
-		/*
-		 * A signal callback may release the last reference to this
-		 * fence, causing it to be freed. That operation has to be
-		 * last to avoid a use after free inside this loop, and must
-		 * be after we remove the fence from the timeline in order to
-		 * prevent deadlocking on timeline->lock inside
-		 * timeline_fence_release().
-		 */
-		fence_signal_locked(&pt->base);
 
 	spin_unlock_irq(&obj->lock);
 }
@@ -258,7 +248,7 @@ EXPORT_SYMBOL(sync_timeline_signal);
  * the generic sync_timeline struct. Returns the sync_pt object or
  * NULL in case of error.
  */
-struct sync_pt *sync_pt_create(struct sync_timeline *obj, int size,
+struct sync_pt *sync_pt_create(struct sync_timeline *obj,
 				      unsigned int value)
 {
 	struct sync_pt *pt;
@@ -339,7 +329,7 @@ static long sw_sync_ioctl_create_fence(struct sync_timeline *obj,
 		goto err;
 	}
 
-	pt = sync_pt_create(obj, sizeof(*pt), data.value);
+	pt = sync_pt_create(obj, data.value);
 	if (!pt) {
 		err = -ENOMEM;
 		goto err;
