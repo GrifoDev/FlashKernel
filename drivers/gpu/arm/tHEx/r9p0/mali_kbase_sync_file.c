@@ -171,7 +171,7 @@ static void kbase_fence_wait_callback(struct dma_fence *fence,
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0))
 	if (dma_fence_is_signaled(kcb->fence) && kcb->fence->error)
 #else
-	if (dma_fence_is_signaled(kcb->fence) && kcb->fence->status < 0)
+	if (dma_fence_is_signaled(kcb->fence) && kcb->fence->error < 0)
 #endif
 		katom->event_code = BASE_JD_EVENT_JOB_CANCELLED;
 
@@ -287,7 +287,7 @@ static void kbase_sync_fence_info_get(struct dma_fence *fence,
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0))
 		int status = fence->error;
 #else
-		int status = fence->status;
+		int status = fence->error;
 #endif
 		if (status < 0)
 			info->status = status; /* signaled with error */

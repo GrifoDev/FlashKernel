@@ -185,7 +185,7 @@ static void timeline_fence_disable_signaling(struct fence *fence)
 {
 	struct sync_pt *pt = container_of(fence, struct sync_pt, base);
 
-	list_del_init(&pt->active_list);
+	list_del_init(&pt->link);
 }
 
 static void timeline_fence_value_str(struct fence *fence,
@@ -257,6 +257,7 @@ EXPORT_SYMBOL(sync_timeline_signal);
 /**
  * sync_pt_create() - creates a sync pt
  * @parent:	fence's parent sync_timeline
+ * @size:	size to allocate for this pt
  * @inc:	value of the fence
  *
  * Creates a new sync_pt as a child of @parent.  @size bytes will be
@@ -264,7 +265,7 @@ EXPORT_SYMBOL(sync_timeline_signal);
  * the generic sync_timeline struct. Returns the sync_pt object or
  * NULL in case of error.
  */
-struct sync_pt *sync_pt_create(struct sync_timeline *obj,
+struct sync_pt *sync_pt_create(struct sync_timeline *obj, int size,
 				      unsigned int value)
 {
 	struct sync_pt *pt;
@@ -375,7 +376,7 @@ static long sw_sync_ioctl_create_fence(struct sync_timeline *obj,
 		goto err;
 	}
 
-	pt = sync_pt_create(obj, data.value);
+	pt = sync_pt_create(obj, sizeof(*pt), data.value);
 	if (!pt) {
 		err = -ENOMEM;
 		goto err;
