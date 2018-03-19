@@ -95,13 +95,6 @@ struct sync_file *sync_file_create(struct fence *fence)
 }
 EXPORT_SYMBOL(sync_file_create);
 
-/**
- * sync_file_fdget() - get a sync_file from an fd
- * @fd:		fd referencing a fence
- *
- * Ensures @fd references a valid sync_file, increments the refcount of the
- * backing file. Returns the sync_file or NULL in case of error.
- */
 struct sync_file *sync_file_fdget(int fd)
 {
 	struct file *file = fget(fd);
@@ -439,10 +432,8 @@ static void sync_fill_fence_info(struct fence *fence,
 		sizeof(info->obj_name));
 	strlcpy(info->driver_name, fence->ops->get_driver_name(fence),
 		sizeof(info->driver_name));
-	if (fence_is_signaled(fence))
-		info->status = fence->status >= 0 ? 1 : fence->status;
-	else
-		info->status = 0;
+
+	info->status = fence_get_status(fence);
 	info->timestamp_ns = ktime_to_ns(fence->timestamp);
 }
 

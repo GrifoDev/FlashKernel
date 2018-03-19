@@ -788,6 +788,7 @@ __acquires(bitlock)
 
 	ext4_unlock_group(sb, grp);
 	ext4_handle_error(sb, page_buf);
+	ext4_commit_super(sb, 1);
 	if (page_buf)
 		free_page((unsigned long)page_buf);
 	/*
@@ -2702,9 +2703,9 @@ static unsigned long ext4_get_stripe_size(struct ext4_sb_info *sbi)
 
 	if (sbi->s_stripe && sbi->s_stripe <= sbi->s_blocks_per_group)
 		ret = sbi->s_stripe;
-	else if (stripe_width <= sbi->s_blocks_per_group)
+	else if (stripe_width && stripe_width <= sbi->s_blocks_per_group)
 		ret = stripe_width;
-	else if (stride <= sbi->s_blocks_per_group)
+	else if (stride && stride <= sbi->s_blocks_per_group)
 		ret = stride;
 	else
 		ret = 0;
