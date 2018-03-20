@@ -47,9 +47,10 @@ ui_print " - removing critical mcRegistries"
 rm -f /vendor/app/mcRegistry/ffffffffd0000000000000000000000a.tlbin
 rm -f /vendor/app/mcRegistry/ffffffffd00000000000000000000062.tlbin
 
-ui_print " - removing Rcl App"
+ui_print " - removing Rcl and SecurityLogAgent App"
 
-rm -f /system/priv-app/Rlc
+rm -rf /system/priv-app/Rlc
+rm -rf /system/app/SecurityLogAgent
 
 ui_print " - removing old prop.default"
 
