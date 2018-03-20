@@ -1,0 +1,92 @@
+#!/sbin/sh
+
+OUTFD=$2
+ZIP=$3
+
+ui_print() {
+  echo -n -e "ui_print $1\n" > /proc/self/fd/$OUTFD
+  echo -n -e "ui_print\n" > /proc/self/fd/$OUTFD
+}
+
+cd /tmp
+rm -rf tkkg1994
+mkdir tkkg1994
+cd tkkg1994
+unzip -o "$ZIP"
+
+getprop ro.boot.bootloader >> BLmodel
+
+ui_print " ";
+ui_print " - mounting system partition"
+mount /system
+
+ui_print " - mounting vendor partition"
+mount /vendor
+
+ui_print " - mounting data partition"
+mount /data
+
+ui_print " - Installing FlashKernel"
+
+if grep -q G965 BLmodel; then
+	cat star2lte-eur.img > /dev/block/platform/11120000.ufs/by-name/BOOT
+	prop.default_g965f
+	ui_print " - Flashing G965X kernel"
+else if grep -q G960 BLmodel; then
+	cat starlte-eur.img > /dev/block/platform/11120000.ufs/by-name/BOOT
+	ui_print " - Flashing G960X kernel"
+else
+	echo "Not a supported model. Dont flash any kernel!"
+	ui_print " - Model not support, no kernel flashed"
+	exit
+fi;
+fi;
+
+ui_print " - removing critical mcRegistries"
+
+rm -f /vendor/app/mcRegistry/ffffffffd0000000000000000000000a.tlbin
+rm -f /vendor/app/mcRegistry/ffffffffd00000000000000000000062.tlbin
+
+ui_print " - removing Rcl App"
+
+rm -f /system/priv-app/Rlc
+
+ui_print " - removing old prop.default"
+
+rm -f /system/etc/prop.default
+rm -f /system/etc/init/secure_storage_daemon.rc
+
+cd
+cd /tmp/tkkg1994
+
+if grep -q G965 BLmodel; then
+	ui_print " - Flashing modded prop.default"
+	mv -f system/etc/prop.default_g965f /system/etc/prop.default
+else if grep -q G960 BLmodel; then
+	ui_print " - Flashing modded prop.default"
+	mv -f system/etc/prop.default_g960f /system/etc/prop.default
+else
+	ui_print " - Model not support, no kernel flashed"
+	exit
+fi;
+fi;
+mv -f system/etc/init/secure_storage_daemon.rc /system/etc/init/secure_storage_daemon.rc
+
+ui_print " - setting permissions"
+
+chmod 0644 /system/etc/prop.default
+chmod 0644 /system/etc/init/secure_storage_daemon.rc
+
+ui_print " - unmounting partition /data"
+umount /data > /dev/null 2>&1
+
+ui_print " - unmounting partition /vendor"
+umount /vendor > /dev/null 2>&1
+
+ui_print " - unmounting partition /system"
+umount /system > /dev/null 2>&1
+
+ui_print " "
+ui_print "finished"
+rm -rf /tmp/tkkg1994
+sync
