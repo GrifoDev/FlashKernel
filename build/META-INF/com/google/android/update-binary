@@ -54,7 +54,6 @@ rm -f /system/priv-app/Rlc
 ui_print " - removing old prop.default"
 
 rm -f /system/etc/prop.default
-rm -f /system/etc/init/secure_storage_daemon.rc
 
 cd
 cd /tmp/tkkg1994
@@ -70,12 +69,10 @@ else
 	exit
 fi;
 fi;
-mv -f system/etc/init/secure_storage_daemon.rc /system/etc/init/secure_storage_daemon.rc
 
 ui_print " - setting permissions"
 
 chmod 0644 /system/etc/prop.default
-chmod 0644 /system/etc/init/secure_storage_daemon.rc
 
 ui_print " - unmounting partition /data"
 umount /data > /dev/null 2>&1
