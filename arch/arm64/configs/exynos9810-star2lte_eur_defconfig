@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm64 4.9.88 Kernel Configuration
+# Linux/arm64 4.9.89 Kernel Configuration
 #
 CONFIG_ARM64=y
 CONFIG_64BIT=y
@@ -561,12 +561,11 @@ CONFIG_CMDLINE=""
 # CONFIG_EFI is not set
 # CONFIG_BUILD_ARM64_APPENDED_DTB_IMAGE is not set
 # CONFIG_TIMA is not set
-CONFIG_UH=y
-CONFIG_UH_DEBUG=y
-CONFIG_UH_RKP=y
-CONFIG_UH_RKP_6G=y
-CONFIG_UH_INFORM=y
-# CONFIG_RKP_KDP is not set
+# CONFIG_UH is not set
+# CONFIG_UH_DEBUG is not set
+# CONFIG_UH_RKP is not set
+# CONFIG_UH_RKP_6G is not set
+# CONFIG_UH_INFORM is not set
 
 #
 # Userspace binary formats
