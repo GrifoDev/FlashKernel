@@ -74,6 +74,8 @@ obj-$(CONFIG_TIMA_LOG)		+= tima_debug_log.o
 # DM-Verity
 obj-$(CONFIG_DM_VERITY)		+= dmverity_query.o
 
+KCOV_INSTRUMENT_lkdtm_rodata.o	:= n
+
 OBJCOPYFLAGS :=
 OBJCOPYFLAGS_lkdtm_rodata_objcopy.o := \
 			--set-section-flags .text=alloc,readonly \
