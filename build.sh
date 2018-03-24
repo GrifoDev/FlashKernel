@@ -4,7 +4,7 @@
 export MODEL=star2lte
 export VARIANT=eur
 export ARCH=arm64
-export BUILD_CROSS_COMPILE=/home/tkkg1994/android/omni/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-
+export BUILD_CROSS_COMPILE=../Toolchain/gcc-linaro-7.2.1_aarch64-linux-gnu/bin/aarch64-linux-gnu-
 export BUILD_JOB_NUMBER=`grep processor /proc/cpuinfo|wc -l`
 
 RDIR=$(pwd)
