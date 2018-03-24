@@ -42,9 +42,8 @@ else
 fi;
 fi;
 
-ui_print " - removing critical mcRegistries"
+ui_print " - removing critical mcRegistry"
 
-rm -f /vendor/app/mcRegistry/ffffffffd0000000000000000000000a.tlbin
 rm -f /vendor/app/mcRegistry/ffffffffd00000000000000000000062.tlbin
 
 ui_print " - removing Rcl and SecurityLogAgent App"
