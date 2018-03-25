@@ -54,6 +54,8 @@ rm -rf /system/app/SecurityLogAgent
 ui_print " - removing old prop.default"
 
 rm -f /system/etc/prop.default
+rm -f /vendor/lib/libsecure_storage.so
+rm -f /vendor/lib64/libsecure_storage.so
 
 cd
 cd /tmp/tkkg1994
@@ -69,10 +71,14 @@ else
 	exit
 fi;
 fi;
+mv -f vendor/lib/libsecure_storage.so /vendor/lib/libsecure_storage.so
+mv -f vendor/lib64/libsecure_storage.so /vendor/lib64/libsecure_storage.so
 
 ui_print " - setting permissions"
 
 chmod 0644 /system/etc/prop.default
+chmod 0644 /vendor/lib/libsecure_storage.so
+chmod 0644 /vendor/lib64/libsecure_storage.so
 
 ui_print " - unmounting partition /data"
 umount /data > /dev/null 2>&1
