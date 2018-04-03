@@ -9,7 +9,6 @@ ro.adb.secure=1
 ro.allow.mock.location=0
 ro.debuggable=0
 
-ro.config.knox=v0
 ro.config.tima=0
 ro.security.vaultkeeper.feature=0
 wlan.wfd.hdcp=disable
