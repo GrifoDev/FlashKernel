@@ -17,8 +17,8 @@ ro.securestorage.support=false
 #
 # BOOTIMAGE_BUILD_PROPERTIES
 #
-ro.bootimage.build.date=Wed Mar 7 09:26:05 KST 2018
-ro.bootimage.build.date.utc=1520382365
-ro.bootimage.build.fingerprint=samsung/starltexx/starlte:8.0.0/R16NW/G960FXXU1ARC5:user/release-keys
+ro.bootimage.build.date=Thu Mar 22 20:49:44 KST 2018
+ro.bootimage.build.date.utc=1521719384
+ro.bootimage.build.fingerprint=samsung/starltexx/starlte:8.0.0/R16NW/G960FXXU1ARCC:user/release-keys
 persist.sys.usb.config=none
 
