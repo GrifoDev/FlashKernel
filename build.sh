@@ -21,7 +21,7 @@ case $MODEL in
 starlte)
 	case $VARIANT in
 	can|duos|eur|xx)
-		KERNEL_DEFCONFIG=exynos9810-starlte_eur_defconfig
+		KERNEL_DEFCONFIG=exynos9810-starlte_defconfig
 		;;
 	*)
 		echo "Unknown variant: $VARIANT"
@@ -32,7 +32,7 @@ starlte)
 star2lte)
 	case $VARIANT in
 	can|duos|eur|xx)
-		KERNEL_DEFCONFIG=exynos9810-star2lte_eur_defconfig
+		KERNEL_DEFCONFIG=exynos9810-star2lte_defconfig
 		;;
 	*)
 		echo "Unknown variant: $VARIANT"
