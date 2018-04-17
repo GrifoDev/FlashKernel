@@ -90,6 +90,7 @@ alternative_else_nop_endif
 	sub	sp, sp, #S_FRAME_SIZE
 	.else
 	sub	sp, sp, #(S_FRAME_SIZE+PRESERVE_STACK_SIZE)
+	.endif /* \el == 0 */
 	b	el\()\el\()_\label
 	.endm
 
@@ -99,7 +100,6 @@ alternative_else_nop_endif
 	.endm
 
 	.macro	kernel_entry, el, regsize = 64
-	.endif /* \el == 0 */
 	.if	\regsize == 32
 	mov	w0, w0				// zero upper 32 bits of x0
 	.endif
