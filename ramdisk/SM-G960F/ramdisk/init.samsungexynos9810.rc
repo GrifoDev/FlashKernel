@@ -137,17 +137,24 @@ on post-fs-data
     chown system audio /sys/class/dsm/max98512/spk_excu_overcnt_r
     chown system audio /sys/class/dsm/max98512/spk_temp_max
     chown system audio /sys/class/dsm/max98512/spk_temp_max_r
+    chown system audio /sys/class/dsm/max98512/spk_temp_max_keep
+    chown system audio /sys/class/dsm/max98512/spk_temp_max_keep_r
     chown system audio /sys/class/dsm/max98512/spk_temp_maxtime
     chown system audio /sys/class/dsm/max98512/spk_temp_maxtime_r
     chown system audio /sys/class/dsm/max98512/spk_temp_overcnt
     chown system audio /sys/class/dsm/max98512/spk_temp_overcnt_r
     chown system audio /sys/class/dsm/max98512/spk_amp_reg_wrong_cnt
     chown system audio /sys/class/dsm/max98512/spk_amp_reg_diff_dump
+    chown system audio /sys/class/dsm/maxdsm_cal/amp_screen_interval
+    chown system audio /sys/class/dsm/maxdsm_cal/amp_screen_ratio
+    chown system audio /sys/class/dsm/maxdsm_cal/amp_screen_ratio_r
+    chown system audio /sys/class/dsm/maxdsm_cal/amp_screen_status
     chown system audio /sys/class/dsm/maxdsm_cal/duration
     chown system audio /sys/class/dsm/maxdsm_cal/max
     chown system audio /sys/class/dsm/maxdsm_cal/min
     chown system audio /sys/class/dsm/maxdsm_cal/rdc
     chown system audio /sys/class/dsm/maxdsm_cal/rdc_r
+    chown system audio /sys/class/dsm/maxdsm_cal/screen_duration
     chown system audio /sys/class/dsm/maxdsm_cal/status
     chown system audio /sys/class/dsm/maxdsm_cal/temp
     chown system audio /sys/class/dsm/maxdsm_cal/v_duration
@@ -345,6 +352,9 @@ on boot
     chown radio system /sys/devices/platform/17500000.mali/dvfs_table
     chmod 0664 /sys/devices/platform/17500000.mali/dvfs_table
 
+    # Permission for gpu_info
+    chown system system /sys/kernel/gpu/gpu_info
+    
     # Permissions for input_booster
     chown system radio /sys/class/input_booster/level
     chown system radio /sys/class/input_booster/head
@@ -649,6 +659,11 @@ on fs
 	chown system system /sys/class/mdnie/mdnie/color_lens
 	chown system system /sys/class/mdnie/mdnie/whiteRGB
 	chown system system /sys/class/mdnie/mdnie/light_notification
+	
+# Permissions for System LSI HDR LUT
+	chown system system /sys/module/hdr_tunables/parameters/tm_override_enable
+	chown system system /sys/module/hdr_tunables/parameters/tm_lut_x
+	chown system system /sys/module/hdr_tunables/parameters/tm_lut_y
 
 # Permissions for System LSI NFC
 # NFC : Permissions for NFC

@@ -29,9 +29,9 @@
 #include <asm/esr.h>
 #include <asm/irq.h>
 #include <asm/memory.h>
-#include <asm/ptrace.h>
 #include <asm/mmu.h>
 #include <asm/processor.h>
+#include <asm/ptrace.h>
 #include <asm/thread_info.h>
 #include <asm/uaccess.h>
 #include <asm/asm-uaccess.h>
@@ -87,6 +87,7 @@ alternative_if ARM64_UNMAP_KERNEL_AT_EL0
 	.endif
 alternative_else_nop_endif
 #endif
+
 	.if	\el == 0
 	sub	sp, sp, #S_FRAME_SIZE
 	.else
@@ -460,12 +461,25 @@ el1_sync:
 	mrs     x0, esr_el1
 	mov     x1, #0x30
 	movk    x1, #0x9600, lsl #0x10
-        cmp     x0, x1
-        b.eq    96f
+	cmp     x0, x1
+	b.eq    96f
+	movk    x1, #0x9400, lsl #0x10
+	cmp     x0, x1
+	b.eq    96f
 	movk    x1, #0x8600, lsl #0x10
-        cmp     x0, x1
-        b.eq    86f
-	b	skip
+	cmp     x0, x1
+	b.eq    86f
+	movk    x1, #0x8400, lsl #0x10
+	cmp     x0, x1
+	b.eq    86f
+	mov     x1, #0x70
+	movk    x1, #0x9600, lsl #0x10
+	cmp     x0, x1
+	b.eq    96f
+	movk    x1, #0x9400, lsl #0x10
+	cmp     x0, x1
+	b.eq    96f
+	b       skip
 96:
 86:
 /* recovery tlb confilict */
@@ -966,7 +980,7 @@ __ni_sys_trace:
 
 	.macro tramp_map_kernel, tmp
 	mrs	\tmp, ttbr1_el1
-	sub	\tmp, \tmp, #SWAPPER_DIR_SIZE
+	sub	\tmp, \tmp, #(SWAPPER_DIR_SIZE + RESERVED_TTBR0_SIZE)
 	bic	\tmp, \tmp, #USER_ASID_FLAG
 	msr	ttbr1_el1, \tmp
 #ifdef CONFIG_ARCH_MSM8996
@@ -983,7 +997,7 @@ __ni_sys_trace:
 
 	.macro tramp_unmap_kernel, tmp
 	mrs	\tmp, ttbr1_el1
-	add	\tmp, \tmp, #SWAPPER_DIR_SIZE
+	add	\tmp, \tmp, #(SWAPPER_DIR_SIZE + RESERVED_TTBR0_SIZE)
 	orr	\tmp, \tmp, #USER_ASID_FLAG
 	msr	ttbr1_el1, \tmp
 	/*
@@ -1010,7 +1024,9 @@ __ni_sys_trace:
 	tramp_map_kernel	x30
 #ifdef CONFIG_RANDOMIZE_BASE
 	adr	x30, tramp_vectors + PAGE_SIZE
-#ifndef CONFIG_ARCH_MSM8996
+#ifdef CONFIG_QCOM_FALKOR_ERRATUM_1003
+alternative_insn isb, nop, ARM64_WORKAROUND_QCOM_FALKOR_E1003
+#else
 	isb
 #endif
 	ldr	x30, [x30]
@@ -1035,7 +1051,11 @@ __ni_sys_trace:
 	.endm
 
 	.align	11
+#ifdef CONFIG_RKP_CFP_JOPP
+VECTOR_ENTRY(tramp_vectors)
+#else
 ENTRY(tramp_vectors)
+#endif
 	.space	0x400
 
 	tramp_ventry

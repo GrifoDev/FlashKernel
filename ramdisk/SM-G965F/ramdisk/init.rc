@@ -517,8 +517,15 @@ on post-fs-data
     mkdir /data/misc/profman 0770 system shell
     mkdir /data/misc/gcov 0770 root root
 
+    #lpnetConfig AppSync
+    mkdir /data/misc/lpnet 0700 system system
+
     # Professioanl Audio
     mkdir /data/misc/jack 0770 jack system
+
+# [ SEC_PRODUCT_FEATURE_SECURITY_SUPPORT_FIVE
+    mkdir /data/misc/integrity 0775 audit system
+# ] SEC_PRODUCT_FEATURE_SECURITY_SUPPORT_FIVE
 
 # [ SEC_SELINUX_PORTING_COMMON
     mkdir /data/misc/audit 0775 audit system
@@ -661,6 +668,9 @@ on post-fs-data
     copy /system/etc/nfc_key /data/nfc/Key
     chmod 660 /data/nfc/Key
     chown nfc nfc /data/nfc/Key
+
+    # OCF Key Service
+    mkdir /data/system/ocf_key_service 0700 system system
 
     init_user0
 
@@ -1061,9 +1071,6 @@ on boot
     chmod 0660 /dev/ncm_dev
     chown system system /dev/ncm_dev
 
-#OTP
-    mkdir /data/otp 0700 system system
-
 # UFS
     chown system system /sys/block/sda/device/model
     chmod 444 /sys/block/sda/device/model
@@ -1089,6 +1096,8 @@ on boot
     chmod 660 /sys/block/sda/diskios
     chown system system /sys/class/scsi_host/host0/unique_number
     chmod 440 /sys/class/scsi_host/host0/unique_number
+    chown system system /sys/class/scsi_host/host0/lc
+    chmod 444 /sys/class/scsi_host/host0/lc
 
 # SD
     chown system system /sys/block/mmcblk0/device/cid
@@ -1138,6 +1147,9 @@ on boot
     chown system system /sys/class/sec/tsp/z_value
     chown system system /sys/class/sec/tsp/sensitivity_mode
     chown system system /sys/class/sec/tsp/prox_power_off
+    chown system system /sys/class/sec/tsp/irq_recovery_count
+    chown system system /sys/class/sec/tsp/ic_reset_count
+    chown system system /sys/class/sec/tsp/mode_change_failed_count
     chown system system /dev/tspio
 
     # Permissions for Touchkey
@@ -1497,16 +1509,6 @@ service esecomm /system/bin/tlc_server ESECOMM
 on property:persist.security.tlc.esecomm=1
     start esecomm
     setprop persist.security.tlc.esecomm 0
-
-# otp
-service otp /system/bin/otp_server
-    user system
-    group system
-    disabled
-
-on property:persist.security.tlc.otp=1
-    start otp
-    setprop persist.security.tlc.otp 0
 
 # knox_changer service
 # Allow the Knox Active Protection mode to be set from recovery
