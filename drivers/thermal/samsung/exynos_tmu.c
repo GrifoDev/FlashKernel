@@ -369,6 +369,7 @@ static void exynos_tmu_control(struct platform_device *pdev, bool on)
 
 	mutex_lock(&data->lock);
 	data->tmu_control(pdev, on);
+	data->enabled = on;
 	mutex_unlock(&data->lock);
 }
 
@@ -630,6 +631,7 @@ static void exynos9810_tmu_control(struct platform_device *pdev, bool on)
 static int exynos_get_temp(void *p, int *temp)
 {
 	struct exynos_tmu_data *data = p;
+	int value, ret = 0;
 #ifndef CONFIG_EXYNOS_ACPM_THERMAL
 	struct thermal_cooling_device *cdev = NULL;
 	struct thermal_zone_device *tz;
@@ -643,15 +645,24 @@ static int exynos_get_temp(void *p, int *temp)
 	unsigned int i;
 #endif
 
-	if (!data || !data->tmu_read)
+	if (!data || !data->tmu_read || !data->enabled)
 		return -EINVAL;
 
 	mutex_lock(&data->lock);
 
-	if (data->num_of_sensors)
-		*temp = data->tmu_read(data) * MCELSIUS;
-	else
-		*temp = code_to_temp(data, data->tmu_read(data)) * MCELSIUS;
+	if (data->num_of_sensors) {
+		value = data->tmu_read(data);
+		if (value < 0)
+			ret = value;
+		else
+			*temp = data->tmu_read(data) * MCELSIUS;
+	} else {
+		value = data->tmu_read(data);
+		if (value < 0)
+			ret = value;
+		else
+			*temp = code_to_temp(data, value) * MCELSIUS;
+	}
 
 	mutex_unlock(&data->lock);
 
@@ -693,7 +704,7 @@ static int exynos_get_temp(void *p, int *temp)
 			exynos_ss_thermal(NULL, mcinfo_temp, "MCINFO", 0);
 	}
 #endif
-	return 0;
+	return ret;
 }
 
 #ifdef CONFIG_SEC_BOOTSTAT
