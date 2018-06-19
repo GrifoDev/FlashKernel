@@ -1146,7 +1146,6 @@ struct energy_env {
 	int			util_delta;
 	int			src_cpu;
 	int			dst_cpu;
-	int			payoff;
 
 	/* Mask of CPUs candidates to evaluate */
 	cpumask_t		cpus_mask;
@@ -1174,18 +1173,6 @@ struct energy_env {
 		int	nrg_delta;
 
 	} cpu[EAS_CPU_CNT];
-
-	struct {
-		int before;
-		int after;
-		int delta;
-		int diff;
-	} nrg;
-	struct {
-		int before;
-		int after;
-		int delta;
-	} cap;
 
 	/*
 	 * Index (into energy_env::cpu) of the morst energy efficient CPU for
