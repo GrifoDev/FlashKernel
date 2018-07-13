@@ -1825,6 +1825,7 @@ struct sk_buff *ip6_make_skb(struct sock *sk,
 		ip6_cork_release(&cork, &v6_cork);
 		return ERR_PTR(err);
 	}
+
 	if (ipc6->dontfrag < 0)
 		ipc6->dontfrag = inet6_sk(sk)->dontfrag;
 
