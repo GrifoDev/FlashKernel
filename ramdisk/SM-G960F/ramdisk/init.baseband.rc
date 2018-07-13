@@ -53,3 +53,9 @@ on property:ro.multisim.simslotcount=2
 
 on property:ro.csc.sales_code=TEL
 	write /sys/module/modem_io_device/parameters/region 1
+
+on property:gsm.sim.operator.numeric=46611
+	write /sys/module/modem_io_device/parameters/region 1
+
+on property:gsm.sim.operator.numeric=46692
+	write /sys/module/modem_io_device/parameters/region 1
