@@ -25,12 +25,6 @@ on init
 
     symlink /data/app /factory
 
-    #Reactivation Lock
-    symlink /dev/block/platform/11120000.ufs/by-name/STEADY /dev/block/steady
-
-    #Google FRP solution
-    symlink /dev/block/platform/11120000.ufs/by-name/PERSISTENT /dev/block/persistent
-
     #Permission for EHMP
     chown system system /sys/kernel/ehmp/up_threshold
     chown system system /sys/kernel/ehmp/down_threshold
