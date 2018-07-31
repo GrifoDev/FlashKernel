@@ -4804,8 +4804,7 @@ static inline void hrtick_update(struct rq *rq)
 #endif
 
 #ifdef CONFIG_SMP
-static bool __cpu_overutilized(int cpu, int delta);
-static bool __weak cpu_overutilized(int cpu);
+bool __weak cpu_overutilized(int cpu);
 unsigned long boosted_cpu_util(int cpu);
 #else
 #define boosted_cpu_util(cpu) cpu_util_freq(cpu)
@@ -6024,15 +6023,10 @@ static inline bool task_fits_max(struct task_struct *p, int cpu)
 	return __task_fits(p, cpu, 0);
 }
 
-static bool __cpu_overutilized(int cpu, int delta)
+bool __weak cpu_overutilized(int cpu)
 {
 	return (capacity_of(cpu) * capacity_orig_of(cpu)) <
-		((cpu_util(cpu) + delta) * capacity_margin_of(cpu));
-}
-
-static bool __weak cpu_overutilized(int cpu)
-{
-	return __cpu_overutilized(cpu, 0);
+		(cpu_util(cpu) * capacity_margin_of(cpu));
 }
 
 #ifdef CONFIG_SCHED_TUNE
@@ -7050,7 +7044,6 @@ static int select_energy_cpu_brute(struct task_struct *p, int prev_cpu, int sync
 	}
 
 	if (target_cpu != prev_cpu) {
-		int delta = 0;
 		struct energy_env eenv = {
 			.util_delta     = task_util(p),
 			.src_cpu        = prev_cpu,
@@ -7059,13 +7052,8 @@ static int select_energy_cpu_brute(struct task_struct *p, int prev_cpu, int sync
 			.trg_cpu	= target_cpu,
 		};
 
-
-#ifdef CONFIG_SCHED_WALT
-		if (!walt_disabled && sysctl_sched_use_walt_cpu_util)
-			delta = task_util(p);
-#endif
 		/* Not enough spare capacity on previous cpu */
-		if (__cpu_overutilized(prev_cpu, delta)) {
+		if (cpu_overutilized(prev_cpu)) {
 			schedstat_inc(p->se.statistics.nr_wakeups_secb_insuff_cap);
 			schedstat_inc(this_rq()->eas_stats.secb_insuff_cap);
 			goto unlock;
