@@ -1123,20 +1123,6 @@ struct sched_group_energy {
 };
 
 /*
- * CPU candidates.
- *
- * These are labels to reference CPU candidates for an energy_diff.
- * Currently we support only two possible candidates: the task's previous CPU
- * and another candiate CPU.
- * More advanced/aggressive EAS selection policies can consider more
- * candidates.
- */
-#define EAS_CPU_PRV	0
-#define EAS_CPU_NXT	1
-#define EAS_CPU_BKP	2
-#define EAS_CPU_CNT	3
-
-/*
  * energy_diff - supports the computation of the estimated energy impact in
  * moving a "task"'s "util_delta" between different CPU candidates.
  */
@@ -1144,9 +1130,6 @@ struct energy_env {
 	/* Utilization to move */
 	struct task_struct	*p;
 	int			util_delta;
-	int			src_cpu;
-	int			dst_cpu;
-	int			payoff;
 
 	/* Mask of CPUs candidates to evaluate */
 	cpumask_t		cpus_mask;
@@ -1174,18 +1157,6 @@ struct energy_env {
 		int	nrg_delta;
 
 	} cpu[EAS_CPU_CNT];
-
-	struct {
-		int before;
-		int after;
-		int delta;
-		int diff;
-	} nrg;
-	struct {
-		int before;
-		int after;
-		int delta;
-	} cap;
 
 	/*
 	 * Index (into energy_env::cpu) of the morst energy efficient CPU for

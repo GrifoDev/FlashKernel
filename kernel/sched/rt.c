@@ -2091,8 +2091,19 @@ static void check_preempt_curr_rt(struct rq *rq, struct task_struct *p, int flag
 #endif
 }
 
+#ifdef CONFIG_SMP
+static void sched_rt_update_capacity_req(struct rq *rq)
+{
+	if (!sched_freq())
+		return;
+
+	set_rt_cpu_capacity(rq->cpu, 1, rq->rt.avg.util_avg);
+}
+#else
 static inline void sched_rt_update_capacity_req(struct rq *rq)
 { }
+
+#endif
 
 static struct sched_rt_entity *pick_next_rt_entity(struct rq *rq,
 						   struct rt_rq *rt_rq)

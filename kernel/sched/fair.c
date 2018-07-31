@@ -4805,7 +4805,7 @@ static inline void hrtick_update(struct rq *rq)
 
 #ifdef CONFIG_SMP
 static bool __cpu_overutilized(int cpu, int delta);
-bool __weak cpu_overutilized(int cpu);
+static bool __weak cpu_overutilized(int cpu);
 unsigned long boosted_cpu_util(int cpu);
 #else
 #define boosted_cpu_util(cpu) cpu_util_freq(cpu)
@@ -5461,6 +5461,20 @@ static inline bool energy_aware(void)
 	return sched_feat(ENERGY_AWARE);
 }
 
+/*
+ * CPU candidates.
+ *
+ * These are labels to reference CPU candidates for an energy_diff.
+ * Currently we support only two possible candidates: the task's previous CPU
+ * and another candiate CPU.
+ * More advanced/aggressive EAS selection policies can consider more
+ * candidates.
+ */
+#define EAS_CPU_PRV	0
+#define EAS_CPU_NXT	1
+#define EAS_CPU_BKP	2
+#define EAS_CPU_CNT	3
+
 static int cpu_util_wake(int cpu, struct task_struct *p);
 
 /*
@@ -5893,7 +5907,11 @@ static inline int select_energy_cpu_idx(struct energy_env *eenv)
 		}
 	}
 
-	return eenv->next_idx;
+	diff = eenv->nrg.after - eenv->nrg.before;
+
+	eenv->nrg.diff = (abs(diff) < margin) ? 0 : eenv->nrg.diff;
+
+	return eenv->nrg.diff;
 }
 
 #ifdef CONFIG_SCHED_TUNE
@@ -5941,11 +5959,21 @@ normalize_energy(int energy_diff)
 inline int
 energy_diff(struct energy_env *eenv)
 {
+	int boost = schedtune_task_boost(eenv->p);
 	int nrg_delta;
 
 	/* Conpute "absolute" energy diff */
-	select_energy_cpu_idx(eenv);
+	__energy_diff(eenv);
 
+	/* Return energy diff when boost margin is 0 */
+	if (boost == 0) {
+		trace_sched_energy_diff(eenv->p,
+				eenv->src_cpu, eenv->dst_cpu, eenv->util_delta,
+				eenv->nrg.before, eenv->nrg.after, eenv->nrg.diff,
+				eenv->cap.before, eenv->cap.after, eenv->cap.delta,
+				0, -eenv->nrg.diff);
+		return eenv->nrg.diff;
+	}
 
 	/* Compute normalized energy diff */
 	nrg_delta = normalize_energy(eenv->nrg.diff);
@@ -5966,9 +5994,6 @@ energy_diff(struct energy_env *eenv)
 	 */
 	return -eenv->payoff;
 }
-#else /* CONFIG_SCHED_TUNE */
-#define energy_diff(eenv) __energy_diff(eenv)
-#endif
 
 /*
  * Detect M:N waker/wakee relationships via a switching-frequency heuristic.
@@ -6112,7 +6137,7 @@ static bool __cpu_overutilized(int cpu, int delta)
 		((cpu_util(cpu) + delta) * capacity_margin_of(cpu));
 }
 
-bool __weak cpu_overutilized(int cpu)
+static bool __weak cpu_overutilized(int cpu)
 {
 	return __cpu_overutilized(cpu, 0);
 }
