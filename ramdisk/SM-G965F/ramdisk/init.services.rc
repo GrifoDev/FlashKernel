@@ -10,6 +10,7 @@ on boot
 on property:sys.boot_completed=1
     start sysinit
     start wakelock
+    stop proca
 
 service kernelinit /sbin/kernelinit.sh
     user root
