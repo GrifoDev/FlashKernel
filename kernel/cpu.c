@@ -1053,7 +1053,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
 static int takedown_cpus(const struct cpumask *down_cpus)
 {
 	int err, cpu;
