@@ -22,6 +22,7 @@ auditfilter at_distributor rild_log_data:dir write;
 auditfilter atfwd sysfs:file read;
 auditfilter blkid_untrusted blkid_untrusted:capability { dac_override dac_read_search };
 auditfilter blkid_untrusted ion_device:chr_file read;
+auditfilter blkid_untrusted paramblk_device:blk_file read;
 auditfilter blkid_untrusted steady_block_device:blk_file read;
 auditfilter blkid_untrusted vold:unix_stream_socket { read write };
 auditfilter bluetooth overlay_prop:file { read getattr };
